@@ -204,6 +204,21 @@ void joystickTask(void * parameters){
 }
 
 
+/////// scene changing logic
+void menuButtonPressed(){
+  //const String* activeScene = scenes[scene].items;
+  if(activeScene.items == mainMenu){
+    switch(cursor){
+      case 0:
+        activeScene.items = scenes[findSceneNumber(*systemStatusMenu)].items;
+        activeScene.length = ARRAY_SIZE(activeScene.items);
+        break;
+    }
+  }
+}
+
+
+
 /// menu task handle
 TaskHandle_t menuTaskHandle = NULL;
 
@@ -212,7 +227,7 @@ void menuTask(void * parameters){
    for(;;){
     while(joystickAction == 0){ vTaskDelay(MENU_TASK_WAITING_DELAY / portTICK_PERIOD_MS); }
 
-    int length = scenes[scene].length;
+    int length = activeScene.length;
 
     //joystick action logic
     if(joystickAction == 1){
@@ -222,7 +237,7 @@ void menuTask(void * parameters){
       cursor --;
       if(cursor < 0){ cursor ++; }
     } else if(joystickAction == 3){
-      
+      menuButtonPressed();
     }
 
     ////SCENE GENERATION
@@ -230,8 +245,8 @@ void menuTask(void * parameters){
     sendSlow("\\c"); //clear screen
     vTaskDelay(SEND_SLOW_DELAY * 2 / portTICK_PERIOD_MS);
 
-     if(scene < (sizeof(scenes)/sizeof(scenes[0]))){
-      const Scene& s = scenes[scene];
+     if(findSceneNumber(activeScene) < (sizeof(scenes)/sizeof(scenes[0]))){
+      const Scene& s = activeScene;
       length = s.length;
       if(s.items != nullptr){
         for(int i = 0; i < length; i++){
@@ -260,6 +275,8 @@ void menuTask(void * parameters){
     Serial.print(cursor);
     Serial.print("   joystickAction: ");
     Serial.print(joystickAction);
+    Serial.print("    ActiveScene: ");
+    Serial.print(findSceneNumber(activeScene));
     Serial.println();
 
 
