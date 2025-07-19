@@ -58,11 +58,15 @@
  *     - Added triangle and invert commands
  *     - Replaced String parsing with strtok for RAM efficiency
  *     - Improved circle implementation using midpoint algorithm
+ *   [v3.4]
+ *     - Unknown command is now displayed fully on the screen for easier debugging
+ *     - Added &newline and &breakline command
+ *     - added ability to easily change baudrate and display it on the starting screen
  *
  * Author: Antoni Gzara & GPT-4o  (2025)
  * ===============================================================
  */
-
+#define BAUDRATE 115200
 
 #include <TVout.h>
 #include <pollserial.h>
@@ -130,10 +134,27 @@ void invertScreen() {
 
 void setup() {
   TV.begin(NTSC);
+  TV.set_hbi_hook(pserial.begin(BAUDRATE));
   TV.select_font(font6x8);
-  TV.println("TvOut Host");
-  TV.println("-- Extended Commands --");
-  TV.set_hbi_hook(pserial.begin(115200));
+  TV.println();
+  TV.println(" TvOut Host");
+  TV.println(" -- V3.4 --");
+  TV.draw_rect(4, 6, 62, 18, WHITE);
+
+  //drawTriangle(4, 63, 4, 34, 33, 34);
+  //drawTriangle(8, 63, 37, 63, 37, 34);
+
+  TV.println("\n\n\n");
+  TV.println("    TvOut");
+  int x = 3;
+  int y = 4;
+  drawCircleMidpoint(33 + x, 54+y, 21);
+  TV.draw_line(15+ x, 54+y, 33+ x, 34+y, WHITE);
+  TV.draw_line(33+ x,34+y,53+ x,54+y, WHITE);
+  TV.draw_line(53+ x,54+y,33+ x,74+y, WHITE);
+  TV.draw_line(15+ x,54+y,33+ x,74+y, WHITE);
+  TV.draw_line(33+x,34+y, 28+x, 29+y, WHITE);
+  TV.draw_line(33+x, 34+y, 38+x, 29+y, WHITE);
 }
 
 void loop() {
