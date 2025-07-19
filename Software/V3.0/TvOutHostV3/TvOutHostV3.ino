@@ -146,7 +146,10 @@ void loop() {
       if (data[0] == '&') {
         if (strcmp(data, "&clear") == 0 || strcmp(data, "&clr") == 0) {
           TV.clear_screen();
-        } 
+        } else if (strcmp(data, "&newline") == 0 || strcmp(data, "&breakline") == 0) {
+          TV.println();
+        }
+        
         else if (strncmp(data, "&rect", 5) == 0) {
           char *cmd = strtok(data, " ");
           char *sx = strtok(NULL, " ");
@@ -235,7 +238,8 @@ void loop() {
           invertScreen();
         }
         else {
-          TV.println("Unknown cmd");
+          TV.println("Unknown cmd: ");
+          TV.println(data);
         }
       } else {
         TV.print(data);
